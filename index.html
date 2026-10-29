@@ -85,11 +85,13 @@ table.kw td.kwd{white-space:normal;min-width:220px;max-width:380px}
 .pill.research{background:#fdf3dd;color:#8a5a00;border:1px dashed #f0dcae}
 .modal-bg{position:fixed;inset:0;background:rgba(20,17,55,.45);display:none;align-items:center;justify-content:center;z-index:30}.modal-bg.open{display:flex}
 .modal{background:var(--bg);border-radius:10px;width:560px;max-width:94vw;max-height:90vh;overflow:auto;padding:18px 20px;box-shadow:0 12px 40px rgba(35,48,67,.18)}
-.modal h3{margin:0 0 10px;font-size:15px}.sortsel{border:1px solid var(--border-strong);border-radius:var(--radius);padding:4px 8px;background:var(--bg)}
+.modal h3{margin:0 0 10px;font-size:15px}.sortsel{-webkit-appearance:none;appearance:none;border:1px solid var(--border-strong);border-radius:var(--radius);padding:4px 30px 4px 10px;line-height:1.4;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23530700' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;cursor:pointer}
+#banner{display:none!important}
 th[title]{cursor:help}.unc{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;margin-top:8px}.unc .r{display:flex;gap:8px;align-items:center;padding:3px 0;border-top:1px solid var(--border);font-size:12px}.unc .r:first-child{border-top:none}.unc .r .k{flex:1}
 </style>
 </head>
 <body>
+<div style="background:#000;color:#fff;font:13px/1.4 system-ui,sans-serif;padding:8px 16px;text-align:center">Demo with invented data. The real backlog runs on NOOMI's private data; edits here stay in your browser. <a href="https://github.com/Noodree/noomi-seo-backlog" style="color:#fff;text-decoration:underline">About this project</a></div>
 <header class="top">
   <div class="top-row">
     <div class="wordmark">NOOMI<span class="dot">·</span>SEO BACKLOG</div>
@@ -106,7 +108,6 @@ th[title]{cursor:help}.unc{background:var(--bg);border:1px solid var(--border);b
 </header>
 <div class="banner" id="banner"><span id="bannerText"></span><button class="btn" id="bannerConnect">Connect data file</button><span class="note" style="color:inherit">Import and Export JSON are in the ⋯ menu, top right.</span></div>
 <main>
-  <div style="background:#ffd5d5;color:#530700;font:13px/1.4 system-ui,sans-serif;padding:8px 16px;text-align:center">Demo with invented data. The real backlog runs on NOOMI's private data; edits here stay in your browser. <a href="https://github.com/Noodree/noomi-seo-backlog" style="color:#530700">About this project</a></div>
   <div class="onboard" id="onboard"><h2>NOOMI SEO backlog</h2><div>Connect <code>backlog-data.json</code> (this folder) once. Chrome remembers it.</div><div><button class="btn primary" id="onboardConnect">Connect data file</button> <button class="btn" id="onboardImport">Import JSON</button></div><div class="note" id="onboardNote"></div></div>
   <div id="ideasWrap" class="hidden" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column"><div class="ideas-toolbar"><span id="ideasCount" class="note"></span><span class="spacer"></span><label class="note" for="ideaSort">Sort</label> <select class="sortsel" id="ideaSort" title="Sort the ideas"><option value="traffic">Most visits</option><option value="winn">Most winnable</option><option value="priority">Priority</option><option value="fit">ICP fit</option><option value="newest">Newest</option><option value="status">Status</option><option value="title">Title</option></select></div><div id="viewIdeas" class="grid"></div></div>
   <div id="viewKeywords" class="scroll hidden"></div>
@@ -205,7 +206,7 @@ function ideaCard(a){var ks=ideaKeywords(a);var p=ks.filter(function(k){return k
 function renderIdeas(){var rows=ideas().filter(passesIdea);var order={review:0,drafting:1,brief:2,scheduled:3,idea:4,published:5,cancelled:6};var m=S.ideaSort;
   rows.sort(function(a,b){if(m==="traffic")return estTraffic(b)-estTraffic(a)||ideaPriority(b)-ideaPriority(a);if(m==="winn")return ideaWinn(b)-ideaWinn(a)||estTraffic(b)-estTraffic(a);if(m==="priority")return ideaPriority(b)-ideaPriority(a);if(m==="fit")return(b.fit||0)-(a.fit||0)||estTraffic(b)-estTraffic(a);if(m==="newest")return String(b.createdAt||"").localeCompare(String(a.createdAt||""))||String(b.updatedAt||"").localeCompare(String(a.updatedAt||""));if(m==="title")return String(a.workingTitle).localeCompare(String(b.workingTitle));return(order[a.status]||0)-(order[b.status]||0)||estTraffic(b)-estTraffic(a);});
   var pending=ideas().filter(function(a){return a.research==="requested"&&a.status!=="cancelled";}).length;
-  var head=pending?'<div class="note" style="grid-column:1/-1;background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber);padding:6px 10px;border-radius:8px">'+pending+' idea'+(pending>1?"s":"")+' waiting for research. Say "research the ideas" in a NOOMI session, or wait for the Wednesday run.</div>':"";
+  var head=pending?'<div class="note" style="grid-column:1/-1;background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber);padding:6px 10px;border-radius:8px">👉 '+pending+' idea'+(pending>1?"s":"")+' waiting for research. Say "research the ideas" in a NOOMI session, or wait for the Wednesday run.</div>':"";
   var cnt=document.getElementById("ideasCount");if(cnt)cnt.textContent=rows.length+" idea"+(rows.length===1?"":"s");
   var el=document.getElementById("viewIdeas");el.innerHTML=head+(rows.length?rows.map(ideaCard).join(""):'<div class="note">No ideas match. Ideas are content pieces: a working title, the keywords it targets, an outline, the FAQ questions. Create one with + Idea, or from a keyword or a competitor page.</div>');}
 document.getElementById("viewIdeas").addEventListener("click",function(e){var c=e.target.closest(".card");if(c)openIdea(c.getAttribute("data-id"));});
